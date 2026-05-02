@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Корзина | KFC</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<nav class="top-bar">
+    <div class="nav-logo"><a href="/">🍗 KFC</a></div>
+    <div class="top-links">
+        <a href="/">Главная</a>
+        <a href="/menu">Меню</a>
+        <a href="/cart" class="cart-link">🛒 Корзина</a>
+        <span th:if="${username}" th:text="${username}" class="username-badge"></span>
+        <a th:if="${username}" href="/my-orders">Мои заказы</a>
+        <a th:if="${username}" href="/logout" class="btn-logout">Выйти</a>
+        <a th:unless="${username}" href="/login" class="btn-login">Войти</a>
+    </div>
+</nav>
+
+<!-- WebSocket уведомление -->
+<div id="ws-notification" class="ws-notification" style="display:none;"></div>
+
+<div class="section cart-section">
+    <h2>🛒 Моя корзина</h2>
+
+    <!-- Успешный заказ -->
+    <div th:if="${param.success}" class="alert alert-success">
+        ✅ Заказ успешно оформлен! Мы готовим его для вас.
+    </div>
+
+    <!-- Корзина не пустая -->
+    <div th:unless="${#maps.isEmpty(cartItems)}">
+        <div class="cart-table">
+            <div class="cart-header">
+                <span>Блюдо</span>
+                <span>Цена</span>
+                <span>Количество</span>
+                <span>Сумма</span>
+                <span></span>
+            </div>
+            <div th:each="entry : ${cartItems}" class="cart-row">
+                <div class="cart-product-name">
+                    <img th:src="@{'/images/' + ${entry.key.imageUrl}}"
+                         onerror="this.src='/images/placeholder.jpg'"
+                         class="cart-thumb">
+                    <span th:text="${entry.key.name}">Название</span>
+                </div>
+                <div th:text="${entry.key.price} + ' ₸'">Цена</div>
+                <div th:text="${entry.value}">Кол-во</div>
+                <div th:text="${entry.key.price * entry.value} + ' ₸'">Сумма</div>
+                <div>
+                    <form method="post" action="/cart/remove" style="display:inline;">
+                        <input type="hidden" name="productId" th:value="${entry.key.id}">
+                        <button type="submit" class="remove-btn">✕</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-total">
+            <strong>Итого: <span th:text="${total} + ' ₸'">0 ₸</span></strong>
+        </div>
+
+        <div class="cart-actions">
+            <a href="/menu" class="btn-secondary">← Продолжить покупки</a>
+            <form method="post" action="/checkout">
+                <button type="submit" class="order-btn-cart">Оформить заказ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Корзина пустая -->
+    <div th:if="${#maps.isEmpty(cartItems)}" class="empty-cart">
+        <div class="empty-cart-icon">🛒</div>
+        <p>Корзина пуста</p>
+        <a href="/menu" class="view-btn">Перейти в меню</a>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-columns">
+        <div class="col"><h4>Меню</h4><a href="/menu">Все блюда</a></div>
+        <div class="col"><h4>Аккаунт</h4><a href="/login">Войти</a><a href="/register">Регистрация</a></div>
+    </div>
+    <div class="copyright">© 2024 KFC Kazakhstan</div>
+</footer>
+
+<!-- WebSocket (критерий: Socket programming) -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script>
+    // Подключение к WebSocket серверу
+    const socket = new SockJS('/ws');
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function () {
+        stompClient.subscribe('/topic/status', function (message) {
+            const notif = document.getElementById('ws-notification');
+            notif.textContent = message.body;
+            notif.style.display = 'block';
+            setTimeout(() => notif.style.display = 'none', 5000);
+        });
+    });
+</script>
+</body>
+</html>

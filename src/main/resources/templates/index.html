@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KFC | Главная</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Верхняя панель -->
+<nav class="top-bar">
+    <div class="nav-logo"><a href="/">🍗 KFC</a></div>
+    <div class="top-links">
+        <a href="/">Главная</a>
+        <a href="/menu">Меню</a>
+        <a href="/ingredients">11 Ингредиентов</a>
+        <a href="/cart" class="cart-link">🛒 Корзина</a>
+        <span th:if="${username}" th:text="${username}" class="username-badge"></span>
+        <a th:if="${username}" href="/my-orders">Мои заказы</a>
+        <a th:if="${username}" href="/logout" class="btn-logout">Выйти</a>
+        <a th:unless="${username}" href="/login" class="btn-login">Войти</a>
+        <a th:unless="${username}" href="/register" class="btn-register">Регистрация</a>
+    </div>
+</nav>
+
+<!-- Слайдер -->
+<div class="slider-container">
+    <div class="slides">
+        <div class="slide active">
+            <img src="/images/slide1.jpg" alt="KFC Новинка" onerror="this.src='/images/placeholder.jpg'">
+            <div class="slide-text">
+                <h2>Свежеприготовленное — всегда лучше!</h2>
+                <a href="/menu" class="slide-btn">Заказать сейчас</a>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="/images/slide2.jpg" alt="KFC Специальное" onerror="this.src='/images/placeholder.jpg'">
+            <div class="slide-text">
+                <h2>11 секретных специй Полковника Сандерса</h2>
+                <a href="/ingredients" class="slide-btn">Узнать больше</a>
+            </div>
+        </div>
+    </div>
+    <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+    <button class="next" onclick="changeSlide(1)">&#10095;</button>
+    <div class="dots">
+        <span class="dot active" onclick="currentSlide(0)"></span>
+        <span class="dot" onclick="currentSlide(1)"></span>
+    </div>
+</div>
+
+<!-- Рекомендуем -->
+<div class="section">
+    <h2 class="section-title">РЕКОМЕНДУЕМ</h2>
+    <div class="products-grid">
+        <a href="/menu" class="product-card">
+            <div class="product-img">
+                <img src="/images/spicy_chef_burger.jpg" onerror="this.src='/images/placeholder.jpg'" alt="Шефбургер">
+            </div>
+            <h3>ШЕФБУРГЕР ОСТРЫЙ</h3>
+            <p>Филе в уникальной панировке, салат, огурцы, лук, соус Бургер</p>
+            <div class="price">1 850 ₸</div>
+        </a>
+        <a href="/menu" class="product-card">
+            <div class="product-img">
+                <img src="/images/boxmaster_combo.jpg" onerror="this.src='/images/placeholder.jpg'" alt="Боксмастер">
+            </div>
+            <h3>БОКСМАСТЕР КОМБО</h3>
+            <p>Боксмастер, картофель фри большой, Pepsi 0,5л, кетчуп</p>
+            <div class="price">3 700 ₸</div>
+        </a>
+        <a href="/menu" class="product-card">
+            <div class="product-img">
+                <img src="/images/spicy_chef_tower.jpg" onerror="this.src='/images/placeholder.jpg'" alt="Шеф Тауэр">
+            </div>
+            <h3>ШЕФ ТАУЭР ОСТРЫЙ</h3>
+            <p>Двойное филе, хашбраун, сыр, салат айсберг</p>
+            <div class="price">2 450 ₸</div>
+        </a>
+        <a href="/menu" class="product-card">
+            <div class="product-img">
+                <img src="/images/friends_box_combo.jpg" onerror="this.src='/images/placeholder.jpg'" alt="Френдс Бокс">
+            </div>
+            <h3>ФРЕНДС БОКС КОМБО</h3>
+            <p>Для большой компании: Бокс + Pepsi 1,5л + 4 соуса</p>
+            <div class="price">14 500 ₸</div>
+        </a>
+    </div>
+    <div class="view-all">
+        <a href="/menu" class="view-btn">ПРОСМОТРЕТЬ ВСЕ ПРЕДЛОЖЕНИЯ</a>
+    </div>
+</div>
+
+<!-- Баннер ингредиентов -->
+<div class="ingredients-banner-wrap">
+    <div class="ingredients-banner">
+        <img src="/images/ingredients-banner.jpg" alt="11 ингредиентов" onerror="this.src='/images/placeholder.jpg'">
+        <div class="ingredients-banner-text">
+            <h2>11 ингредиентов</h2>
+            <p>Что делает наши блюда особенными</p>
+            <a href="/ingredients"><button>ОТКРОЙТЕ ИХ ДЛЯ СЕБЯ</button></a>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-columns">
+        <div class="col"><h4>Меню</h4><a href="/menu">Все блюда</a><a href="/ingredients">11 Ингредиентов</a></div>
+        <div class="col"><h4>Аккаунт</h4><a href="/login">Войти</a><a href="/register">Регистрация</a><a href="/my-orders">Мои заказы</a></div>
+        <div class="col"><h4>Подписывайтесь:</h4><div class="social">📘 Instagram 📸 Facebook</div></div>
+    </div>
+    <div class="copyright">© 2024 KFC Kazakhstan</div>
+</footer>
+
+<script>
+    let slideIndex = 0;
+    const slides = document.getElementsByClassName("slide");
+    const dots = document.getElementsByClassName("dot");
+    let timer = setInterval(() => changeSlide(1), 6000);
+
+    function showSlide(n) {
+        if (n >= slides.length) slideIndex = 0;
+        if (n < 0) slideIndex = slides.length - 1;
+        [...slides].forEach(s => s.classList.remove("active"));
+        [...dots].forEach(d => d.classList.remove("active"));
+        slides[slideIndex].classList.add("active");
+        dots[slideIndex].classList.add("active");
+    }
+
+    function changeSlide(n) {
+        clearInterval(timer);
+        showSlide(slideIndex += n);
+        timer = setInterval(() => changeSlide(1), 6000);
+    }
+
+    function currentSlide(n) {
+        clearInterval(timer);
+        showSlide(slideIndex = n);
+        timer = setInterval(() => changeSlide(1), 6000);
+    }
+</script>
+</body>
+</html>

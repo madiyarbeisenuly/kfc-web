@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>11 Ингредиентов | KFC</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="top-bar">
+    <div class="nav-logo"><a href="/">🍗 KFC</a></div>
+    <div class="top-links">
+        <a href="/">Главная</a>
+        <a href="/menu">Меню</a>
+        <a href="/cart">🛒 Корзина</a>
+        <span th:if="${username}" th:text="${username}" class="username-badge"></span>
+        <a th:if="${username}" href="/logout" class="btn-logout">Выйти</a>
+        <a th:unless="${username}" href="/login" class="btn-login">Войти</a>
+    </div>
+</nav>
+
+<div class="ingredients-header">
+    <div>
+        <h1>11 ингредиентов</h1>
+        <p>Что делает наши блюда особенными</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient1.jpg" onerror="this.src='/images/placeholder.jpg'" alt="01"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">01</div>
+            <h2 class="ingredient-title">Свежеприготовленное — всегда лучше!</h2>
+            <p class="ingredient-text">Удивительный вкус наших блюд объясняется тем, что еда готовится всего за несколько минут до подачи. От курицы и бургеров до картофеля фри и салатов — любое блюдо готовится сразу же!</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient2.jpg" onerror="this.src='/images/placeholder.jpg'" alt="02"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">02</div>
+            <h2 class="ingredient-title">Условия содержания цыплят</h2>
+            <p class="ingredient-text">Условия содержания цыплят тщательно и внепланово проверяются независимыми международными компаниями на соответствие стандартам благополучия животных.</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient3.jpg" onerror="this.src='/images/placeholder.jpg'" alt="03"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">03</div>
+            <h2 class="ingredient-title">Сырьё</h2>
+            <p class="ingredient-text">Все поставщики сертифицированы по GFSI и проверены на соответствие международным стандартам здоровья и безопасности.</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient4.jpg" onerror="this.src='/images/placeholder.jpg'" alt="04"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">04</div>
+            <h2 class="ingredient-title">Сертификация поваров</h2>
+            <p class="ingredient-text">Каждый повар 2 раза в месяц проходит аттестацию на знание рецептов!</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient5.jpg" onerror="this.src='/images/placeholder.jpg'" alt="05"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">05</div>
+            <h2 class="ingredient-title">Проверка масла</h2>
+            <p class="ingredient-text">Контроль кислотности масла проводится дважды в день. При превышении допустимых значений масло немедленно заменяется!</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient6.jpg" onerror="this.src='/images/placeholder.jpg'" alt="06"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">06</div>
+            <h2 class="ingredient-title">Технологии приготовления</h2>
+            <p class="ingredient-text">Просеивание муки перед каждой панировкой. Мука в каждом ресторане просеивается до 100 раз в день.</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient7.jpg" onerror="this.src='/images/placeholder.jpg'" alt="07"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">07</div>
+            <h2 class="ingredient-title">Контроль качества</h2>
+            <p class="ingredient-text">Прежде чем подать курочку гостям, мы проверяем каждый кусочек. Если он не идеален — вы его не увидите!</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient8.jpg" onerror="this.src='/images/placeholder.jpg'" alt="08"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">08</div>
+            <h2 class="ingredient-title">Продолжительность приготовления</h2>
+            <p class="ingredient-text">Время температурной обработки индивидуально для каждой части курицы. Целые кусочки — 90 минут, стрипсы — 45 минут. Ни минутой больше!</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient9.jpg" onerror="this.src='/images/placeholder.jpg'" alt="09"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">09</div>
+            <h2 class="ingredient-title">Температура курицы</h2>
+            <p class="ingredient-text">Температура курицы при хранении не превышает +4°С. После фритюра — минимум +85°С!</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient10.jpg" onerror="this.src='/images/placeholder.jpg'" alt="10"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">10</div>
+            <h2 class="ingredient-title">Температура овощей</h2>
+            <p class="ingredient-text">Температура овощей при приготовлении всегда ниже +5°C. Мы моем овощи по стандарту ISO 22000 (HACCP).</p>
+        </div>
+    </div>
+    <div class="ingredient-card">
+        <div class="ingredient-img"><img src="/images/ingredient11.jpg" onerror="this.src='/images/placeholder.jpg'" alt="11"></div>
+        <div class="ingredient-content">
+            <div class="ingredient-number">11</div>
+            <h2 class="ingredient-title">Срок годности ингредиентов</h2>
+            <p class="ingredient-text">Время пребывания ингредиентов на кухне — максимум 3 часа. Ни одной минутой больше!</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-columns">
+        <div class="col"><h4>Меню</h4><a href="/menu">Все блюда</a></div>
+        <div class="col"><h4>Аккаунт</h4><a href="/login">Войти</a><a href="/register">Регистрация</a></div>
+    </div>
+    <div class="copyright">© 2024 KFC Kazakhstan</div>
+</footer>
+</body>
+</html>

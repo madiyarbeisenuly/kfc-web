@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ панель | KFC</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        .admin-tab { padding: 10px 20px; background: #eee; border-radius: 8px; cursor: pointer; border: none; font-size: 14px; }
+        .admin-tab.active { background: #E4002B; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        .admin-table th { background: #E4002B; color: white; padding: 10px; text-align: left; }
+        .admin-table td { border-bottom: 1px solid #eee; padding: 10px; }
+        .admin-table tr:hover td { background: #fafafa; }
+        .add-product-form { background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+        .add-product-form h3 { margin-bottom: 15px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .form-grid input, .form-grid select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+        .log-entry { background: #f9f9f9; border-left: 4px solid #E4002B; padding: 10px; margin: 8px 0; border-radius: 4px; font-size: 13px; }
+    </style>
+</head>
+<body>
+<nav class="top-bar">
+    <div class="nav-logo"><a href="/">🍗 KFC</a></div>
+    <div class="top-links">
+        <a href="/">Главная</a>
+        <a href="/menu">Меню</a>
+        <span th:text="${username}" class="username-badge"></span>
+        <a href="/logout" class="btn-logout">Выйти</a>
+    </div>
+</nav>
+
+<div class="section">
+    <h2>⚙️ Панель администратора</h2>
+
+    <div class="admin-tabs">
+        <button class="admin-tab active" onclick="showTab('users')">👥 Пользователи</button>
+        <button class="admin-tab" onclick="showTab('products')">🍗 Продукты</button>
+        <button class="admin-tab" onclick="showTab('logs')">📋 Логи (JDBC)</button>
+    </div>
+
+    <!-- Пользователи -->
+    <div id="tab-users" class="tab-content active">
+        <h3>Пользователи (<span th:text="${users.size()}"></span>)</h3>
+        <table class="admin-table">
+            <tr><th>ID</th><th>Логин</th><th>Email</th><th>Роль</th><th>Создан</th><th>Действие</th></tr>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.role}"></td>
+                <td th:text="${user.createdAt}"></td>
+                <td><a th:href="@{/admin/users/delete/{id}(id=${user.id})}" class="delete-btn"
+                       onclick="return confirm('Удалить пользователя?')">Удалить</a></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Продукты -->
+    <div id="tab-products" class="tab-content">
+        <div class="add-product-form">
+            <h3>➕ Добавить продукт</h3>
+            <form method="post" action="/admin/products/add">
+                <div class="form-grid">
+                    <input type="text" name="name" placeholder="Название" required>
+                    <input type="number" name="price" placeholder="Цена (₸)" step="0.01" required>
+                    <select name="category">
+                        <option value="chicken">Курочка</option>
+                        <option value="basket">Баскет</option>
+                        <option value="box">Бокс</option>
+                        <option value="burger">Бургер</option>
+                        <option value="twister">Твистер</option>
+                        <option value="snack">Снэк</option>
+                        <option value="sauce">Соус</option>
+                    </select>
+                    <input type="text" name="description" placeholder="Описание">
+                    <input type="text" name="imageUrl" placeholder="Имя файла картинки">
+                </div>
+                <button type="submit" class="order-btn-cart" style="margin-top:10px;">Добавить</button>
+            </form>
+        </div>
+
+        <h3>Все продукты (<span th:text="${products.size()}"></span>)</h3>
+        <table class="admin-table">
+            <tr><th>ID</th><th>Название</th><th>Цена</th><th>Категория</th><th>Доступен</th><th>Действие</th></tr>
+            <tr th:each="p : ${products}">
+                <td th:text="${p.id}"></td>
+                <td th:text="${p.name}"></td>
+                <td th:text="${p.price} + ' ₸'"></td>
+                <td th:text="${p.category}"></td>
+                <td th:text="${p.available ? '✅' : '❌'}"></td>
+                <td><a th:href="@{/admin/products/delete/{id}(id=${p.id})}" class="delete-btn"
+                       onclick="return confirm('Удалить продукт?')">Удалить</a></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- JDBC Логи -->
+    <div id="tab-logs" class="tab-content">
+        <h3>📋 Логи заказов (через чистый JDBC)</h3>
+        <p style="color:#666; margin-bottom:15px;">Записи ведутся через <code>DriverManager.getConnection()</code> и <code>PreparedStatement</code> — без JPA</p>
+        <div th:if="${logs.isEmpty()}">Логов пока нет. Оформите заказ!</div>
+        <div th:each="log : ${logs}" class="log-entry">
+            <b>#<span th:text="${log.id}"></span></b>
+            | Заказ: <span th:text="${log.orderId}"></span>
+            | Пользователь: <span th:text="${log.userId}"></span>
+            | Сумма: <span th:text="${log.total}"></span> ₸
+            | Статус: <span th:text="${log.status}"></span>
+            | <span th:text="${log.loggedAt}"></span>
+            <div style="color:#555; margin-top:4px;" th:text="${log.message}"></div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="copyright">© 2024 KFC Kazakhstan | Admin Panel</div>
+</footer>
+
+<script>
+    function showTab(name) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        event.target.classList.add('active');
+    }
+</script>
+</body>
+</html>

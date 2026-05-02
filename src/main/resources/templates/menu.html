@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Меню | KFC</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: white;
+            margin: 40px auto;
+            max-width: 860px;
+            width: 92%;
+            border-radius: 16px;
+            overflow: hidden;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            background: #E4002B;
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 { margin: 0; font-size: 20px; letter-spacing: 1px; }
+        .close-modal {
+            font-size: 28px; cursor: pointer;
+            color: white; line-height: 1;
+            background: none; border: none;
+        }
+        .modal-body {
+            display: flex;
+            gap: 0;
+        }
+        .modal-image {
+            flex: 1;
+            background: #f9f9f9;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-image img {
+            width: 100%;
+            max-width: 280px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        .modal-image p {
+            color: #888;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 12px;
+            font-style: italic;
+        }
+        .modal-options {
+            flex: 1.2;
+            padding: 24px;
+            overflow-y: auto;
+            max-height: 520px;
+        }
+        .option-group {
+            border-top: 1px solid #eee;
+            padding: 14px 0;
+        }
+        .option-group:first-child { border-top: none; }
+        .option-group h4 {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #222;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            accent-color: #E4002B;
+            width: 18px; height: 18px;
+            cursor: pointer;
+        }
+        .option-item label {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+        .modal-footer {
+            border-top: 1px solid #eee;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .quantity-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 15px;
+        }
+        .qty-btn {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 2px solid #E4002B;
+            background: white;
+            color: #E4002B;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            line-height: 1;
+        }
+        .qty-input {
+            width: 36px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            outline: none;
+        }
+        .modal-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #E4002B;
+        }
+        .add-to-cart-modal {
+            background: #E4002B;
+            color: white;
+            border: none;
+            padding: 13px 28px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .add-to-cart-modal:hover { background: #c0001f; }
+        @media (max-width: 640px) {
+            .modal-body { flex-direction: column; }
+            .modal-options { max-height: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-bar">
+    <div class="nav-logo"><a href="/">🍗 KFC</a></div>
+    <div class="top-links">
+        <a href="/">Главная</a>
+        <a href="/menu">Меню</a>
+        <a href="/cart" class="cart-link">🛒 Корзина</a>
+        <span th:if="${username}" th:text="${username}" class="username-badge"></span>
+        <a th:if="${username}" href="/my-orders">Мои заказы</a>
+        <a th:if="${username}" href="/logout" class="btn-logout">Выйти</a>
+        <a th:unless="${username}" href="/login" class="btn-login">Войти</a>
+    </div>
+</nav>
+
+<div class="menu-layout">
+    <div class="categories-sidebar">
+        <h3>Категории</h3>
+        <a onclick="scrollToCategory('chicken')">🍗 Сочная курочка</a>
+        <a onclick="scrollToCategory('basket')">🧺 Баскеты</a>
+        <a onclick="scrollToCategory('box')">📦 Боксы</a>
+        <a onclick="scrollToCategory('burger')">🍔 Бургеры</a>
+        <a onclick="scrollToCategory('twister')">🌯 Твистеры</a>
+        <a onclick="scrollToCategory('snack')">🍟 Снэки</a>
+        <a onclick="scrollToCategory('sauce')">🥫 Соусы</a>
+    </div>
+
+    <div class="products-area">
+        <div th:each="entry : ${productsByCategory}" th:if="${!entry.value.isEmpty()}">
+            <div th:id="${entry.key}" class="category-section">
+                <h2 class="category-title"
+                    th:text="${entry.key == 'chicken' ? '🍗 Сочная курочка' :
+                               entry.key == 'basket' ? '🧺 Баскеты' :
+                               entry.key == 'box'    ? '📦 Боксы' :
+                               entry.key == 'burger' ? '🍔 Бургеры' :
+                               entry.key == 'twister'? '🌯 Твистеры' :
+                               entry.key == 'snack'  ? '🍟 Снэки' :
+                               entry.key == 'sauce'  ? '🥫 Соусы и допы' : entry.key}">
+                </h2>
+                <div class="products-grid">
+                    <div th:each="product : ${entry.value}"
+                         class="product-card"
+                         th:data-id="${product.id}"
+                         th:data-name="${product.name}"
+                         th:data-price="${product.price}"
+                         th:data-description="${product.description}"
+                         th:data-image="${product.imageUrl}"
+                         onclick="openModalFromData(this)">
+                        <div class="product-img">
+                            <img th:src="@{'/images/' + ${product.imageUrl}}"
+                                 onerror="this.src='/images/placeholder.jpg'"
+                                 th:alt="${product.name}">
+                        </div>
+                        <h3 th:text="${product.name}">Название</h3>
+                        <p th:text="${product.description}">Описание</p>
+                        <div class="price" th:text="${product.price} + ' ₸'">Цена</div>
+                        <button class="add-btn">В корзину</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно в стиле KFC -->
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Название товара</h2>
+            <button class="close-modal" onclick="closeModal()">&#x2715;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-image">
+                <img id="modalImage" src="" alt="product">
+                <p id="modalDescription"></p>
+            </div>
+            <div class="modal-options">
+                <div class="option-group">
+                    <h4>Выберите опцию</h4>
+                    <div class="option-item">
+                        <input type="radio" name="option" id="opt1" value="Оригинальный" checked>
+                        <label for="opt1">Оригинальный</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="option" id="opt2" value="Острый">
+                        <label for="opt2">Острый</label>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <h4>Выберите ингредиенты</h4>
+                    <div class="option-item">
+                        <input type="checkbox" id="ing1" value="Томаты" checked>
+                        <label for="ing1">Томаты</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="ing2" value="Сыр" checked>
+                        <label for="ing2">Сыр</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="ing3" value="Соус Майонез" checked>
+                        <label for="ing3">Соус Майонез</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="ing4" value="Салат Айсберг" checked>
+                        <label for="ing4">Салат Айсберг</label>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <h4>Выбери свой снэк</h4>
+                    <div class="option-item">
+                        <input type="radio" name="snack" id="snack1" value="Картофель Фри Большой" checked>
+                        <label for="snack1">Картофель Фри Большой</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="snack" id="snack2" value="Картофель Фри Стандартный">
+                        <label for="snack2">Картофель Фри Стандартный</label>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <h4>Выберите свой напиток</h4>
+                    <div class="option-item">
+                        <input type="radio" name="drink" id="drink1" value="Coca Cola 0.5л" checked>
+                        <label for="drink1">Coca Cola 0.5л</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="drink" id="drink2" value="Pepsi 0.5л">
+                        <label for="drink2">Pepsi 0.5л</label>
+                    </div>
+                </div>
+
+                <div class="option-group">
+                    <h4>Выбери соус</h4>
+                    <div class="option-item">
+                        <input type="radio" name="sauce" id="sauce1" value="Кетчуп" checked>
+                        <label for="sauce1">Кетчуп</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="sauce" id="sauce2" value="Барбекю Соус">
+                        <label for="sauce2">Барбекю Соус</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="sauce" id="sauce3" value="Чесночный">
+                        <label for="sauce3">Чесночный</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <div class="quantity-wrap">
+                <span>Количество</span>
+                <button class="qty-btn" type="button" onclick="changeQty(-1)">−</button>
+                <input class="qty-input" type="number" id="modalQty" value="1" min="1" max="10" readonly>
+                <button class="qty-btn" type="button" onclick="changeQty(1)">+</button>
+            </div>
+            <div class="modal-price">
+                Цена &nbsp;<span id="modalPrice">0 ₸</span>
+            </div>
+            <form method="post" action="/add-to-cart-detail">
+                <input type="hidden" name="productId" id="modalProductId">
+                <input type="hidden" name="quantity" id="modalQtyInput" value="1">
+                <button type="submit" class="add-to-cart-modal"
+                        onclick="document.getElementById('modalQtyInput').value=document.getElementById('modalQty').value">
+                    🛒 Добавить в корзину
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="footer-columns">
+        <div class="col"><h4>Меню</h4><a href="/menu">Все блюда</a><a href="/ingredients">11 Ингредиентов</a></div>
+        <div class="col"><h4>Аккаунт</h4><a href="/login">Войти</a><a href="/register">Регистрация</a></div>
+        <div class="col"><h4>Подписывайтесь:</h4><div class="social">📘 📸</div></div>
+    </div>
+    <div class="copyright">© 2024 KFC Kazakhstan</div>
+</footer>
+
+<script>
+    let currentPrice = 0;
+
+    function openModalFromData(el) {
+        var id = el.getAttribute('data-id');
+        var name = el.getAttribute('data-name');
+        var price = parseFloat(el.getAttribute('data-price'));
+        var description = el.getAttribute('data-description');
+        var imageUrl = el.getAttribute('data-image');
+
+        currentPrice = price;
+        document.getElementById('modalTitle').innerText = name;
+        document.getElementById('modalDescription').innerText = description;
+        var img = document.getElementById('modalImage');
+        img.src = '/images/' + imageUrl;
+        img.onerror = function() { this.src = '/images/placeholder.jpg'; };
+        document.getElementById('modalProductId').value = id;
+        document.getElementById('modalQty').value = 1;
+        document.getElementById('modalPrice').innerText = price.toLocaleString('ru') + ' ₸';
+        document.getElementById('productModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('productModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function changeQty(delta) {
+        var qty = parseInt(document.getElementById('modalQty').value) + delta;
+        if (qty < 1) qty = 1;
+        if (qty > 10) qty = 10;
+        document.getElementById('modalQty').value = qty;
+        document.getElementById('modalPrice').innerText = (currentPrice * qty).toLocaleString('ru') + ' ₸';
+    }
+
+    function scrollToCategory(id) {
+        var el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    window.onclick = function(e) {
+        if (e.target === document.getElementById('productModal')) closeModal();
+    };
+</script>
+</body>
+</html>

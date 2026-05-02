@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация | KFC</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="top-bar">
+    <div class="nav-logo"><a href="/">🍗 KFC</a></div>
+    <div class="top-links">
+        <a href="/">Главная</a>
+        <a href="/menu">Меню</a>
+        <a href="/login" class="btn-login">Войти</a>
+    </div>
+</nav>
+
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <div class="auth-logo">🍗</div>
+        <h2>Регистрация</h2>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <form method="post" action="/register">
+            <input type="text" name="username" placeholder="Логин" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
+    </div>
+</div>
+</body>
+</html>
