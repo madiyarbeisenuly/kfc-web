@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль | KFC</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .profile-tabs {
+            background: #E4002B;
+            display: flex;
+            justify-content: center;
+            gap: 0;
+        }
+        .profile-tab {
+            color: white;
+            padding: 16px 28px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            background: none;
+            border-bottom: 3px solid transparent;
+            transition: border-color 0.2s;
+            text-decoration: none;
+        }
+        .profile-tab.active, .profile-tab:hover {
+            border-bottom: 3px solid white;
+        }
+        .profile-body {
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .profile-section {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .profile-section-header {
+            background: #E4002B;
+            color: white;
+            text-align: center;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .profile-section-body {
+            padding: 28px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .form-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 14px;
+            background: #fafafa;
+        }
+        .form-field input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+            color: #333;
+        }
+        .form-field span {
+            color: #aaa;
+            font-size: 18px;
+        }
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+        .checkbox-row input {
+            accent-color: #E4002B;
+            width: 16px; height: 16px;
+        }
+        .save-btn {
+            display: block;
+            margin: 0 auto;
+            background: #E4002B;
+            color: white;
+            border: none;
+            padding: 13px 40px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .save-btn:hover { background: #c0001f; }
+        .delete-btn {
+            display: block;
+            margin: 0 auto;
+            background: white;
+            color: #E4002B;
+            border: 2px solid #E4002B;
+            padding: 12px 40px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover { background: #E4002B; color: white; }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .profile-tab { padding: 12px 14px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="top-bar">
+    <div class="nav-logo"><a href="/">KFC</a></div>
+    <div class="top-links">
+        <a href="/">Главная</a>
+        <a href="/menu">Меню</a>
+        <a href="/cart" class="cart-link">Корзина</a>
+        <span th:text="${username}" class="username-badge"></span>
+        <a href="/my-orders">Мои заказы</a>
+        <a href="/logout" class="btn-logout">Выйти</a>
+    </div>
+</nav>
+
+<!-- Вкладки профиля -->
+<div class="profile-tabs">
+    <a href="/profile" class="profile-tab active">Информация о профиле</a>
+    <a href="/my-orders" class="profile-tab">Мои заказы</a>
+    <a href="/logout" class="profile-tab">Выйти</a>
+</div>
+
+<div class="profile-body">
+
+    <!-- Информация об аккаунте -->
+    <div class="profile-section">
+        <div class="profile-section-header">ИНФОРМАЦИЯ ОБ АККАУНТЕ</div>
+        <div class="profile-section-body">
+            <form method="post" action="/profile/update">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <span>&#128100;</span>
+                        <input type="text" name="firstName" placeholder="Имя"
+                               th:value="${user != null ? user.username : ''}">
+                    </div>
+                    <div class="form-field">
+                        <span>&#128100;</span>
+                        <input type="text" name="lastName" placeholder="Фамилия">
+                    </div>
+                    <div class="form-field">
+                        <span>&#9993;</span>
+                        <input type="email" name="email" placeholder="Email"
+                               th:value="${user != null ? user.email : ''}">
+                    </div>
+                    <div class="form-field">
+                        <span>&#128222;</span>
+                        <input type="tel" name="phone" placeholder="+7-XXX-XXX-XX-XX">
+                    </div>
+                </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="promo">
+                    <label for="promo">Я хочу получать акции и специальные предложения</label>
+                </div>
+                <button type="submit" class="save-btn">Сохранить изменения</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Изменить пароль -->
+    <div class="profile-section">
+        <div class="profile-section-header">ИЗМЕНИТЬ ПАРОЛЬ</div>
+        <div class="profile-section-body">
+            <form method="post" action="/profile/change-password">
+                <div class="form-grid" style="grid-template-columns: 1fr;">
+                    <div class="form-field">
+                        <span>&#128274;</span>
+                        <input type="password" name="oldPassword" placeholder="Старый пароль">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <span>&#128274;</span>
+                        <input type="password" name="newPassword" placeholder="Новый пароль">
+                    </div>
+                    <div class="form-field">
+                        <span>&#128274;</span>
+                        <input type="password" name="confirmPassword" placeholder="Подтвердите пароль">
+                    </div>
+                </div>
+                <p style="font-size:12px; color:#999; text-align:center; margin-bottom:16px;">
+                    Пароль должен состоять не менее чем из 8 символов, включая как минимум 1 строчную букву, 1 прописную букву и 1 символ
+                </p>
+                <button type="submit" class="save-btn">Сохранить изменения</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Удалить аккаунт -->
+    <form method="post" action="/profile/delete"
+          onsubmit="return confirm('Вы уверены что хотите удалить аккаунт?')">
+        <button type="submit" class="delete-btn">Удалить аккаунт</button>
+    </form>
+
+</div>
+
+<footer>
+    <div class="footer-columns">
+        <div class="col">
+            <h4>Аккаунт</h4>
+            <a th:if="${username}" href="/profile">Информация о профиле</a>
+            <a th:if="${username}" href="/my-orders">Мои заказы</a>
+            <a th:if="${username}" href="/logout">Выйти</a>
+            <a th:unless="${username}" href="/login">Войти</a>
+            <a th:unless="${username}" href="/register">Регистрация</a>
+        </div>
+        <div class="social">
+            <a href="https://www.instagram.com/kfc_kazakhstan" target="_blank" style="color:#ccc; text-decoration:none;">Instagram</a>
+            &nbsp;&nbsp;
+            <a href="https://www.facebook.com/KFCKazakhstan" target="_blank" style="color:#ccc; text-decoration:none;">Facebook</a>
+        </div>
+    </div>
+    <div class="copyright">© 2024 KFC Kazakhstan</div>
+</footer>
+
+</body>
+</html>

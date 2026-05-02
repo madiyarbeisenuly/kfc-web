@@ -50,8 +50,8 @@
                 <td th:text="${user.id}"></td>
                 <td th:text="${user.username}"></td>
                 <td th:text="${user.email}"></td>
-                <td th:text="${user.role}"></td>
-                <td th:text="${user.createdAt}"></td>
+                <td th:text="${user.role != null ? user.role : 'USER'}"></td>
+                <td th:text="${#temporals.format(user.createdAt, 'dd.MM.yy - HH:mm')}"></td>
                 <td><a th:href="@{/admin/users/delete/{id}(id=${user.id})}" class="delete-btn"
                        onclick="return confirm('Удалить пользователя?')">Удалить</a></td>
             </tr>

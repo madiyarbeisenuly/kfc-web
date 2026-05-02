@@ -61,4 +61,69 @@ public class AuthController {
         session.invalidate();
         return "redirect:/";
     }
+
+    @GetMapping("/profile")
+    public String profile(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
+        User user = userService.getAllUsers().stream()
+                .filter(u -> u.getId().equals(userId))
+                .findFirst().orElse(null);
+        model.addAttribute("user", user);
+        model.addAttribute("username", session.getAttribute("username"));
+        return "profile";
+    }
+
+    @PostMapping("/profile/update")
+    public String updateProfile(@RequestParam String email,
+                                HttpSession session) {
+        // обновление профиля
+        return "redirect:/profile?updated";
+    }
+
+    @PostMapping("/profile/delete")
+    public String deleteProfile(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId != null) userService.deleteUser(userId);
+        session.invalidate();
+        return "redirect:/";
+    }
+
+    @PostMapping("/profile/change-password")
+    public String changePassword(@RequestParam String oldPassword,
+                                 @RequestParam String newPassword,
+                                 @RequestParam String confirmPassword,
+                                 HttpSession session,
+                                 Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return "redirect:/login";
+
+        Optional<User> userOpt = userService.getAllUsers().stream()
+                .filter(u -> u.getId().equals(userId))
+                .findFirst();
+
+        if (userOpt.isEmpty()) return "redirect:/login";
+
+        User user = userOpt.get();
+
+        if (!user.getPassword().equals(oldPassword)) {
+            model.addAttribute("error", "Старый пароль неверный");
+            model.addAttribute("username", session.getAttribute("username"));
+            model.addAttribute("user", user);
+            return "profile";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("error", "Пароли не совпадают");
+            model.addAttribute("username", session.getAttribute("username"));
+            model.addAttribute("user", user);
+            return "profile";
+        }
+
+        user.setPassword(newPassword);
+        userService.saveUser(user);
+
+        return "redirect:/profile?passwordChanged";
+    }
 }
+

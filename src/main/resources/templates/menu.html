@@ -164,11 +164,11 @@
 <body>
 
 <nav class="top-bar">
-    <div class="nav-logo"><a href="/">🍗 KFC</a></div>
+    <div class="nav-logo"><a href="/"> KFC</a></div>
     <div class="top-links">
         <a href="/">Главная</a>
         <a href="/menu">Меню</a>
-        <a href="/cart" class="cart-link">🛒 Корзина</a>
+        <a href="/cart" class="cart-link"> Корзина</a>
         <span th:if="${username}" th:text="${username}" class="username-badge"></span>
         <a th:if="${username}" href="/my-orders">Мои заказы</a>
         <a th:if="${username}" href="/logout" class="btn-logout">Выйти</a>
@@ -179,26 +179,26 @@
 <div class="menu-layout">
     <div class="categories-sidebar">
         <h3>Категории</h3>
-        <a onclick="scrollToCategory('chicken')">🍗 Сочная курочка</a>
-        <a onclick="scrollToCategory('basket')">🧺 Баскеты</a>
-        <a onclick="scrollToCategory('box')">📦 Боксы</a>
-        <a onclick="scrollToCategory('burger')">🍔 Бургеры</a>
-        <a onclick="scrollToCategory('twister')">🌯 Твистеры</a>
-        <a onclick="scrollToCategory('snack')">🍟 Снэки</a>
-        <a onclick="scrollToCategory('sauce')">🥫 Соусы</a>
+        <a onclick="scrollToCategory('chicken')"> Сочная курочка</a>
+        <a onclick="scrollToCategory('basket')"> Баскеты</a>
+        <a onclick="scrollToCategory('box')"> Боксы</a>
+        <a onclick="scrollToCategory('burger')"> Бургеры</a>
+        <a onclick="scrollToCategory('twister')"> Твистеры</a>
+        <a onclick="scrollToCategory('snack')"> Снэки</a>
+        <a onclick="scrollToCategory('sauce')"> Соусы</a>
     </div>
 
     <div class="products-area">
         <div th:each="entry : ${productsByCategory}" th:if="${!entry.value.isEmpty()}">
             <div th:id="${entry.key}" class="category-section">
                 <h2 class="category-title"
-                    th:text="${entry.key == 'chicken' ? '🍗 Сочная курочка' :
-                               entry.key == 'basket' ? '🧺 Баскеты' :
-                               entry.key == 'box'    ? '📦 Боксы' :
-                               entry.key == 'burger' ? '🍔 Бургеры' :
-                               entry.key == 'twister'? '🌯 Твистеры' :
-                               entry.key == 'snack'  ? '🍟 Снэки' :
-                               entry.key == 'sauce'  ? '🥫 Соусы и допы' : entry.key}">
+                    th:text="${entry.key == 'chicken' ? ' Сочная курочка' :
+                               entry.key == 'basket' ? ' Баскеты' :
+                               entry.key == 'box'    ? ' Боксы' :
+                               entry.key == 'burger' ? ' Бургеры' :
+                               entry.key == 'twister'? ' Твистеры' :
+                               entry.key == 'snack'  ? ' Снэки' :
+                               entry.key == 'sauce'  ? ' Соусы и допы' : entry.key}">
                 </h2>
                 <div class="products-grid">
                     <div th:each="product : ${entry.value}"
@@ -210,7 +210,7 @@
                          th:data-image="${product.imageUrl}"
                          onclick="openModalFromData(this)">
                         <div class="product-img">
-                            <img th:src="@{'/images/' + ${product.imageUrl}}"
+                            <img th:src="${'/images/' + product.imageUrl}"
                                  onerror="this.src='/images/placeholder.jpg'"
                                  th:alt="${product.name}">
                         </div>
@@ -337,8 +337,19 @@
 <footer>
     <div class="footer-columns">
         <div class="col"><h4>Меню</h4><a href="/menu">Все блюда</a><a href="/ingredients">11 Ингредиентов</a></div>
-        <div class="col"><h4>Аккаунт</h4><a href="/login">Войти</a><a href="/register">Регистрация</a></div>
-        <div class="col"><h4>Подписывайтесь:</h4><div class="social">📘 📸</div></div>
+        <div class="col">
+            <h4>Аккаунт</h4>
+            <a th:if="${username}" href="/profile">Информация о профиле</a>
+            <a th:if="${username}" href="/my-orders">Мои заказы</a>
+            <a th:if="${username}" href="/logout">Выйти</a>
+            <a th:unless="${username}" href="/login">Войти</a>
+            <a th:unless="${username}" href="/register">Регистрация</a>
+        </div>
+        <div class="social">
+            <a href="https://www.instagram.com/kfc_kazakhstan" target="_blank" style="color:#ccc; text-decoration:none;">Instagram</a>
+            &nbsp;&nbsp;
+            <a href="https://www.facebook.com/KFCKazakhstan" target="_blank" style="color:#ccc; text-decoration:none;">Facebook</a>
+        </div>
     </div>
     <div class="copyright">© 2024 KFC Kazakhstan</div>
 </footer>

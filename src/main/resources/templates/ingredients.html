@@ -7,7 +7,7 @@
 </head>
 <body>
 <nav class="top-bar">
-    <div class="nav-logo"><a href="/">🍗 KFC</a></div>
+    <div class="nav-logo"><a href="/"> KFC</a></div>
     <div class="top-links">
         <a href="/">Главная</a>
         <a href="/menu">Меню</a>
@@ -118,8 +118,19 @@
 
 <footer>
     <div class="footer-columns">
-        <div class="col"><h4>Меню</h4><a href="/menu">Все блюда</a></div>
-        <div class="col"><h4>Аккаунт</h4><a href="/login">Войти</a><a href="/register">Регистрация</a></div>
+        <div class="col">
+            <h4>Аккаунт</h4>
+            <a th:if="${username}" href="/profile">Информация о профиле</a>
+            <a th:if="${username}" href="/my-orders">Мои заказы</a>
+            <a th:if="${username}" href="/logout">Выйти</a>
+            <a th:unless="${username}" href="/login">Войти</a>
+            <a th:unless="${username}" href="/register">Регистрация</a>
+        </div>
+        <div class="social">
+            <a href="https://www.instagram.com/kfc_kazakhstan" target="_blank" style="color:#ccc; text-decoration:none;">Instagram</a>
+            &nbsp;&nbsp;
+            <a href="https://www.facebook.com/KFCKazakhstan" target="_blank" style="color:#ccc; text-decoration:none;">Facebook</a>
+        </div>
     </div>
     <div class="copyright">© 2024 KFC Kazakhstan</div>
 </footer>
